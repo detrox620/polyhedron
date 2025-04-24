@@ -7,6 +7,7 @@ from common.tk_drawer import TkDrawer
 
 class Segment:
     """ Одномерный отрезок """
+
     # Параметры конструктора: начало и конец отрезка (числа)
 
     def __init__(self, beg, fin):
@@ -42,6 +43,8 @@ class Edge:
         self.beg, self.fin = beg, fin
         # Список «просветов»
         self.gaps = [Segment(Edge.SBEG, Edge.SFIN)]
+        # Является ли ребро полностью видимым?
+        self.visible = True
 
     # Учёт тени от одной грани
     def shadow(self, facet):
@@ -83,10 +86,14 @@ class Edge:
 
 class Facet:
     """ Грань полиэдра """
+
     # Параметры конструктора: список вершин
 
-    def __init__(self, vertexes):
+    def __init__(self, vertexes, edges):
         self.vertexes = vertexes
+        self.edges = edges
+        # Является ли грань «гранью с полностью видимыми рёбрами»?
+        self.visible = True
 
     # «Вертикальна» ли грань?
     def is_vertical(self):
@@ -95,7 +102,7 @@ class Facet:
     # Нормаль к «горизонтальному» полупространству
     def h_normal(self):
         n = (
-            self.vertexes[1] - self.vertexes[0]).cross(
+                self.vertexes[1] - self.vertexes[0]).cross(
             self.vertexes[2] - self.vertexes[0])
         return n * (-1.0) if n.dot(Polyedr.V) < 0.0 else n
 
@@ -109,12 +116,15 @@ class Facet:
     def _vert(self, k):
         n = (self.vertexes[k] - self.vertexes[k - 1]).cross(Polyedr.V)
         return n * \
-            (-1.0) if n.dot(self.vertexes[k - 1] - self.center()) < 0.0 else n
+               (-1.0) if n.dot(self.vertexes[k - 1] - self.center()) < 0.0 else n
 
     # Центр грани
     def center(self):
         return sum(self.vertexes, R3(0.0, 0.0, 0.0)) * \
             (1.0 / len(self.vertexes))
+
+    def area(self):
+        return 1.0
 
 
 class Polyedr:
@@ -128,6 +138,8 @@ class Polyedr:
         # списки вершин, рёбер и граней полиэдра
         self.vertexes, self.edges, self.facets = [], [], []
 
+        # сумма площадей «граней с полностью видимыми рёбрами»
+        self.sum_area = 0.0
         # список строк файла
         with open(file) as f:
             for i, line in enumerate(f):
@@ -154,16 +166,24 @@ class Polyedr:
                     # массив вершин этой грани
                     vertexes = list(self.vertexes[int(n) - 1] for n in buf)
                     # задание рёбер грани
+                    edges = []
                     for n in range(size):
                         self.edges.append(Edge(vertexes[n - 1], vertexes[n]))
+                        edges.append(Edge(vertexes[n - 1], vertexes[n]))
                     # задание самой грани
-                    self.facets.append(Facet(vertexes))
+                    self.facets.append(Facet(vertexes, edges))
 
     # Метод изображения полиэдра
     def draw(self, tk):  # pragma: no cover
         tk.clean()
-        for e in self.edges:
-            for f in self.facets:
-                e.shadow(f)
-            for s in e.gaps:
-                tk.draw_line(e.r3(s.beg), e.r3(s.fin))
+        for facet in self.facets:
+            is_visible = True
+            for e in facet.edges:
+                for f in self.facets:
+                    e.shadow(f)
+                    if not e.visible:
+                        is_visible = False
+                for s in e.gaps:
+                    tk.draw_line(e.r3(s.beg), e.r3(s.fin))
+            if is_visible:
+                self.sum_area += facet.area()
