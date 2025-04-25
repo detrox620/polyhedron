@@ -1,4 +1,4 @@
-from math import pi
+from math import pi, sqrt
 from functools import reduce
 from operator import add
 from common.r3 import R3
@@ -92,8 +92,6 @@ class Facet:
     def __init__(self, vertexes, edges):
         self.vertexes = vertexes
         self.edges = edges
-        # Является ли грань «гранью с полностью видимыми рёбрами»?
-        self.visible = True
 
     # «Вертикальна» ли грань?
     def is_vertical(self):
@@ -124,7 +122,16 @@ class Facet:
             (1.0 / len(self.vertexes))
 
     def area(self):
-        return 1.0
+        center = self.center()
+        sum_area = 0.0
+        for edge in self.edges:
+            v1 = edge.beg
+            v2 = edge.fin
+            l1 = v1 - center
+            l2 = v2 - center
+            vec = l1.cross(l2)
+            sum_area += 0.5 * abs(sqrt(vec.dot(vec)))
+        return sum_area
 
 
 class Polyedr:
@@ -147,7 +154,7 @@ class Polyedr:
                     # обрабатываем первую строку; buf - вспомогательный массив
                     buf = line.split()
                     # коэффициент гомотетии
-                    c = float(buf.pop(0))
+                    self.c = float(buf.pop(0))
                     # углы Эйлера, определяющие вращение
                     alpha, beta, gamma = (float(x) * pi / 180.0 for x in buf)
                 elif i == 1:
@@ -157,7 +164,7 @@ class Polyedr:
                     # задание всех вершин полиэдра
                     x, y, z = (float(x) for x in line.split())
                     self.vertexes.append(R3(x, y, z).rz(
-                        alpha).ry(beta).rz(gamma) * c)
+                        alpha).ry(beta).rz(gamma) * self.c)
                 else:
                     # вспомогательный массив
                     buf = line.split()
@@ -185,5 +192,5 @@ class Polyedr:
                         is_visible = False
                 for s in e.gaps:
                     tk.draw_line(e.r3(s.beg), e.r3(s.fin))
-            if is_visible:
-                self.sum_area += facet.area()
+            if is_visible and R3.in_circle(facet.center(), self.c):
+                self.sum_area += facet.area() / self.c ** 2

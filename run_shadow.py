@@ -16,7 +16,7 @@ try:
         print(f"Изображение полиэдра '{name}' заняло {delta_time} сек.")
         print("Cумма площадей «граней с полностью видимыми рёбрами», "
               "проекция центра которых находится "
-              "строго внутри окружности x2+y2=4:", Poly.sum_area)
+              "строго внутри окружности x^2+y^2=4:", Poly.sum_area)
         input("Hit 'Return' to continue -> ")
 except (EOFError, KeyboardInterrupt):
     print("\nStop")
