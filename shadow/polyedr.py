@@ -63,6 +63,7 @@ class Edge:
                 facet.vertexes[0], facet.h_normal()))
         if shade.is_degenerate():
             return
+        self.visible = False
         # Преобразование списка «просветов», если тень невырождена
         gaps = [s.subtraction(shade) for s in self.gaps]
         self.gaps = [
@@ -92,6 +93,7 @@ class Facet:
     def __init__(self, vertexes, edges):
         self.vertexes = vertexes
         self.edges = edges
+        self.visible = True
 
     # «Вертикальна» ли грань?
     def is_vertical(self):
@@ -184,13 +186,12 @@ class Polyedr:
     def draw(self, tk):  # pragma: no cover
         tk.clean()
         for facet in self.facets:
-            is_visible = True
             for e in facet.edges:
                 for f in self.facets:
                     e.shadow(f)
                     if not e.visible:
-                        is_visible = False
+                        facet.visible = False
                 for s in e.gaps:
                     tk.draw_line(e.r3(s.beg), e.r3(s.fin))
-            if is_visible and R3.in_circle(facet.center(), self.c):
+            if facet.visible and R3.in_circle(facet.center(), self.c):
                 self.sum_area += facet.area() / self.c ** 2
