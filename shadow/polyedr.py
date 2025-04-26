@@ -63,11 +63,13 @@ class Edge:
                 facet.vertexes[0], facet.h_normal()))
         if shade.is_degenerate():
             return
-        self.visible = False
+
         # Преобразование списка «просветов», если тень невырождена
         gaps = [s.subtraction(shade) for s in self.gaps]
         self.gaps = [
             s for s in reduce(add, gaps, []) if not s.is_degenerate()]
+        if len(self.gaps) == 0 or (self.gaps[0].beg != Edge.SBEG or self.gaps[0].fin != Edge.SFIN):
+            self.visible = False
 
     # Преобразование одномерных координат в трёхмерные
     def r3(self, t):
