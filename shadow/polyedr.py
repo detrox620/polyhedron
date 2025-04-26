@@ -68,7 +68,9 @@ class Edge:
         gaps = [s.subtraction(shade) for s in self.gaps]
         self.gaps = [
             s for s in reduce(add, gaps, []) if not s.is_degenerate()]
-        if len(self.gaps) == 0 or (self.gaps[0].beg != Edge.SBEG or self.gaps[0].fin != Edge.SFIN):
+        if len(self.gaps) == 0 or (
+                round(self.gaps[0].beg, 10) != Edge.SBEG
+                or round(self.gaps[0].fin, 10) != Edge.SFIN):
             self.visible = False
 
     # Преобразование одномерных координат в трёхмерные
@@ -191,8 +193,8 @@ class Polyedr:
             for e in facet.edges:
                 for f in self.facets:
                     e.shadow(f)
-                    if not e.visible:
-                        facet.visible = False
+                if not e.visible:
+                    facet.visible = False
                 for s in e.gaps:
                     tk.draw_line(e.r3(s.beg), e.r3(s.fin))
             if facet.visible and R3.in_circle(facet.center(), self.c):
