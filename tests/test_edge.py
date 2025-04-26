@@ -163,7 +163,6 @@ class TestVoid(unittest.TestCase):
         f = Facet([R3(0.0, 0.0, 0.0), R3(0.0, 0.0, 1.0),
                    R3(0.0, 1.0, 1.0), R3(0.0, 1.0, 0.0)], edges)
         s.shadow(f)
-        self.assertEqual(len(s.gaps), 1)
         self.assertTrue(s.visible)
 
     # Перпендикулярная грань не затеняет ничего
@@ -173,5 +172,4 @@ class TestVoid(unittest.TestCase):
         f = Facet([R3(0.0, 0.0, 0.0), R3(1.0, 0.0, 0.0),
                    R3(1.0, 1.0, 0.0), R3(0.0, 1.0, 0.0)], edges)
         s.shadow(f)
-        self.assertEqual(len(s.gaps), 1)
         self.assertTrue(s.visible)

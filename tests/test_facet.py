@@ -1,7 +1,7 @@
 import unittest
 from math import sqrt, isclose
 from common.r3 import R3
-from shadow.polyedr import Facet
+from shadow.polyedr import Edge, Facet
 from tests.matchers import R3ApproxMatcher, R3CollinearMatcher
 
 
@@ -80,3 +80,31 @@ class TestVoid(unittest.TestCase):
         edges = []
         f = Facet([R3(0.0, 0.0, 0.0), R3(3.0, 0.0, 0.0), R3(0.0, 3.0, 0.0)], edges)
         self.assertEqual(R3ApproxMatcher(f.center()), (R3(1.0, 1.0, 0.0)))
+
+    # Площадь треугольника
+    def tast_area01(self):
+        edges = [Edge(R3(0.0, 0.0, 0.0), R3(3.0, 0.0, 0.0)),
+                 Edge(R3(0.0, 0.0, 0.0), R3(0.0, 3.0, 0.0)),
+                 Edge(R3(3.0, 0.0, 0.0), R3(0.0, 3.0, 0.0))]
+        f = Facet([R3(0.0, 0.0, 0.0), R3(3.0, 0.0, 0.0), R3(0.0, 3.0, 0.0)], edges)
+        self.assertEqual(f.area(), 4.5)
+
+    # Площадь квадрата
+    def tast_area02(self):
+        edges = [Edge(R3(0.0, 0.0, 0.0), R3(2.0, 0.0, 0.0)),
+                 Edge(R3(0.0, 0.0, 0.0), R3(0.0, 2.0, 0.0)),
+                 Edge(R3(2.0, 0.0, 0.0), R3(2.0, 2.0, 0.0)),
+                 Edge(R3(2.0, 2.0, 0.0), R3(0.0, 2.0, 0.0))]
+        f = Facet([R3(0.0, 0.0, 0.0), R3(2.0, 0.0, 0.0),
+                   R3(2.0, 2.0, 0.0), R3(0.0, 2.0, 0.0)], edges)
+        self.assertEqual(f.area(), 4.0)
+
+    # Площадь ромба
+    def tast_area03(self):
+        edges = [Edge(R3(0.0, 0.0, 0.0), R3(0.0, 1.0, 1.0)),
+                 Edge(R3(0.0, 0.0, 0.0), R3(1.0, 0.0, 1.0)),
+                 Edge(R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)),
+                 Edge(R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)), ]
+        f = Facet([R3(0.0, 0.0, 0.0), R3(0.0, 1.0, 1.0),
+                   R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)], edges)
+        self.assertEqual(f.area(), sqrt(12.0))
