@@ -82,7 +82,7 @@ class TestVoid(unittest.TestCase):
         self.assertEqual(R3ApproxMatcher(f.center()), (R3(1.0, 1.0, 0.0)))
 
     # Площадь треугольника
-    def tast_area01(self):
+    def test_area01(self):
         edges = [Edge(R3(0.0, 0.0, 0.0), R3(3.0, 0.0, 0.0)),
                  Edge(R3(0.0, 0.0, 0.0), R3(0.0, 3.0, 0.0)),
                  Edge(R3(3.0, 0.0, 0.0), R3(0.0, 3.0, 0.0))]
@@ -90,7 +90,7 @@ class TestVoid(unittest.TestCase):
         self.assertEqual(f.area(), 4.5)
 
     # Площадь квадрата
-    def tast_area02(self):
+    def test_area02(self):
         edges = [Edge(R3(0.0, 0.0, 0.0), R3(2.0, 0.0, 0.0)),
                  Edge(R3(0.0, 0.0, 0.0), R3(0.0, 2.0, 0.0)),
                  Edge(R3(2.0, 0.0, 0.0), R3(2.0, 2.0, 0.0)),
@@ -100,11 +100,11 @@ class TestVoid(unittest.TestCase):
         self.assertEqual(f.area(), 4.0)
 
     # Площадь ромба
-    def tast_area03(self):
+    def test_area03(self):
         edges = [Edge(R3(0.0, 0.0, 0.0), R3(0.0, 1.0, 1.0)),
                  Edge(R3(0.0, 0.0, 0.0), R3(1.0, 0.0, 1.0)),
                  Edge(R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)),
                  Edge(R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)), ]
         f = Facet([R3(0.0, 0.0, 0.0), R3(0.0, 1.0, 1.0),
                    R3(1.0, 0.0, 1.0), R3(1.0, 1.0, 2.0)], edges)
-        self.assertEqual(f.area(), sqrt(12.0))
+        self.assertEqual(f.area(), sqrt(12.0) / 2.0)

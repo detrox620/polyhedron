@@ -108,3 +108,12 @@ class TestR3(unittest.TestCase):
     def test_cross04(self):
         self.assertEqual(R3ApproxMatcher(self.a.cross(R3(3.0, -2.0, 1.0))),
                          R3(8.0, 8.0, -8.0))
+
+    def test_in_circle01(self):
+        self.assertTrue(R3.in_circle(R3(1.0, 0.0, 0.0), 1.0))
+
+    def test_in_circle02(self):
+        self.assertFalse(R3.in_circle(R3(5.0, 50.0, 0.0), 1.0))
+
+    def test_in_circle03(self):
+        self.assertTrue(R3.in_circle(R3(5.0, 5.0, 0.0), 10.0))
